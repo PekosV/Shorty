@@ -5,16 +5,16 @@ Shorty is a microservice that receives URL and transforms them to short and pret
 for us. You can either choose one of these providers or otherwise Shorty will use Bitly as the default provider.
 
 
-#How to use Shorty:
+# How to use Shorty:
 You can run the bash script for running the app.  
 Just type:  
 ```./run.sh```
 
-#How to run the tests:
+# How to run the tests:
 Type:  
 ```py.test```
 
-#Request a shortened url
+# Request a shortened url
 
 In order for Shorty to shorten your url you should send a request like the example below.  
 Note that the provider is optional because Shorty uses Bitly as the default provider in case no provider is requested.  
@@ -27,7 +27,7 @@ Note that the provider is optional because Shorty uses Bitly as the default prov
 ```{'url': 'https://www.withplum.com', 'provider': 'tinyurl' }```  
 or  
 ```{'url': 'https://www.withplum.com'}```  
-#Response from shorty
+# Response from shorty
 
 A valid response from shorty should look like the following example:  
 ```
@@ -49,7 +49,7 @@ or
 }
 ```
 
-#How Shorty was build:
+# How Shorty was build:
 
 When Shorty receives a request firstly it verifies the user input. We verify that the URL is valid and that the requested provider
 is a valid option. For the URL verification I used the validators package.After the verification is done we continue to send the url
@@ -58,14 +58,14 @@ prompts the user to try a different provider. If something goes wrong during exe
 we raise the appropriate exception and send back a message explaining what went wrong.
 
 
-#What could have been better
+# What could have been better
 
 In my opinion there is plenty room for improvement in my implementation of Shorty.  
 For example the use of Docker could have been great as the project could have been more portable and lightweight.  
 Another improvement is to write code to mock the provider's behaviour. That would make testing less dependable to third party
 services.
 
-#What was used to build Shorty
+# What was used to build Shorty
 - Flask (https://flask.palletsprojects.com/en/2.0.x/)
 - Pytest (https://docs.pytest.org/en/6.2.x/)
 - Providers (https://validators.readthedocs.io/en/latest/)
