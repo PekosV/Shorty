@@ -11,8 +11,8 @@ def create_app(settings_overrides=None):
 
 def configure_settings(app, settings_override):
     app.config.update({
-        'DEBUG': True,
-        'TESTING': False,
+        'DEBUG': False,
+        'TESTING': True,
     })
     if settings_override:
         app.config.update(settings_override)
