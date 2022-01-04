@@ -1,80 +1,72 @@
-Software Engineer Task
-======================
+# What is Shorty?
 
-At Plum, we have a lot of services that need to work together to deliver our product.
-Many of these services talk to third-party providers to perform their operations – for
-example moving money, performing background checks, sending messages or emails, etc.
+Shorty is a microservice that receives URL and transforms them to short and prettier urls. Shorty supports two providers:
+[Bitly](https://www.bitly.com) and [TinyUrl](https://tinyurl.com). So Shorty actually send a request to these providers which handle the shortening
+for us. You can either choose one of these providers or otherwise Shorty will use Bitly as the default provider.
 
-In a lot of cases - due to business, compliance or technical reasons - we need to support
-multiple third-party providers for the same operation, some of which have wildy different
-specifications, ranging from simple REST APIs to SOAP.
 
-To maintain our sanity, we abstract these third-parties behind interfaces and expose
-consistent APIs for the rest of the system to consume. Each service should be able to
-pick sensible defaults (and fallbacks, if, for example, a provider is unavailable) or
-allow the consumer to specify the provider if they wish to do so.
+# How to use Shorty:
+You can run the bash script for running the app.  
+Just type:  
+```./run.sh```
 
-Mission
--------
+# How to run the tests:
+Type:  
+```py.test```
 
-Your mission, should you choose to accept it, is to build a microservice called `shorty`, 
-which supports two URL shortening providers: [bit.ly](https://dev.bitly.com/) and [tinyurl.com](https://gist.github.com/MikeRogers0/2907534).
-You don't need to actually sign up to these providers, just implement their API. The
-service exposes a single endpoint: `POST /shortlinks`. The endpoint should receive
-JSON with the following schema:
+# Request a shortened url
 
+In order for Shorty to shorten your url you should send a request like the example below.  
+Note that the provider is optional because Shorty uses Bitly as the default provider in case no provider is requested.  
+  
 | param    | type   | required | description                        |
 |----------|--------|----------|------------------------------------|
 | url      | string | Y        | The URL to shorten                 |
 | provider | string | N        | The provider to use for shortening |
 
-The response should be a `Shortlink` resource containing:
+```{'url': 'https://www.withplum.com', 'provider': 'tinyurl' }```  
+or  
+```{'url': 'https://www.withplum.com'}```  
+# Response from shorty
 
-| param    | type   | required | description                        |
-|----------|--------|----------|------------------------------------|
-| url      | string | Y        | The original URL                   |
-| link     | string | Y        | The shortened link                 |
-
-For example:
-```json
+A valid response from shorty should look like the following example:  
+```
 {
-    "url": "https://example.com",
-    "link": "https://bit.ly/8h1bka"
+    "data": {
+        "short_link": "https://bit.ly/3G42h5P",
+        "url": "https://www.withplum.com"
+    }
+}
+```  
+or  
+
+```
+{
+    "data": {
+        "short_link": "https://tinyurl.com/2bn863up",
+        "url": "https://www.withplum.com"
+    }
 }
 ```
 
-You are free to decide how to pick between the providers if one is not requested and what
-your fallback strategy is in case your primary choice fails. Your endpoint needs to return
-a JSON response with a sensible HTTP status in case of errors or failures.
+# How Shorty was build:
 
-What you need to do
--------------------
+When Shorty receives a request firstly it verifies the user input. We verify that the URL is valid and that the requested provider
+is a valid option. For the URL verification I used the validators package.After the verification is done we continue to send the url
+to the requested provider. If by any chance the server is unavailable (i check for status code 503) we return a message that
+prompts the user to try a different provider. If something goes wrong during execution (e.g. the user requested an invalid url)
+we raise the appropriate exception and send back a message explaining what went wrong.
 
-1. Create a Python env (using Python 3.6+) and install the requirements.
-2. Build the `POST /shortlinks` endpoint. We've provided a skeleton API using `flask`.
-3. Write some tests. We've provided a test blueprint using `pytest`.
 
-Deliverable
------------
+# What could have been better
 
-You should deliver your solution as a Pull Request in your repo. Document your design choices and anything else you think we need to know in the PR description.
+In my opinion there is plenty room for improvement in my implementation of Shorty.  
+For example the use of Docker could have been great as the project could have been more portable and lightweight.  
+Another improvement is to write code to mock the provider's behaviour. That would make testing less dependable to third party
+services.
 
-What we look for
-----------------
-
-In a nutshell, we're looking for tidy, production-quality code, a scalable design and sensible
-tests (unit tests, integration tests or both?). Imagine that your code will be read by other 
-developers in your team – keep them happy :-)
-
-Resources
----------
-
-1. `Flask`: http://flask.pocoo.org/
-2. `pytest`: http://pytest.org/latest/
-3. `virtualenvwrapper`: https://virtualenvwrapper.readthedocs.io/en/latest/
-4. `HTTP statuses`: https://httpstatuses.com/
-
-Disclaimer
-----------
-
-We will not use any of this code for any of Plum's applications.
+# What was used to build Shorty
+- Flask (https://flask.palletsprojects.com/en/2.0.x/)
+- Pytest (https://docs.pytest.org/en/6.2.x/)
+- Providers (https://validators.readthedocs.io/en/latest/)
+- Requests (https://docs.python-requests.org/en/latest/)
